@@ -1,0 +1,38 @@
+@model BasicASP.Models.PersonViewModel
+
+<div class="card border-success">
+    <div class="card-header bg-success text-white">
+        <h5>Employee Information</h5>
+    </div>
+    <div class="card-body">
+        <div class="form-group mb-3">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" class="form-control" type="email" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Age" class="form-label"></label>
+            <input asp-for="Age" class="form-control" type="number" />
+            <span asp-validation-for="Age" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Company" class="form-label">Company</label>
+            <input asp-for="Company" class="form-control" placeholder="e.g., Microsoft" />
+            <span asp-validation-for="Company" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="JobTitle" class="form-label">Job Title</label>
+            <input asp-for="JobTitle" class="form-control" placeholder="e.g., Software Engineer" />
+            <span asp-validation-for="JobTitle" class="text-danger"></span>
+        </div>
+    </div>
+</div>

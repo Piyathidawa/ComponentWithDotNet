@@ -1,0 +1,32 @@
+@model BasicASP.Models.PersonViewModel
+
+<div class="card border-primary">
+    <div class="card-header bg-primary text-white">
+        <h5>Student Information</h5>
+    </div>
+    <div class="card-body">
+        <div class="form-group mb-3">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" class="form-control" type="email" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Age" class="form-label"></label>
+            <input asp-for="Age" class="form-control" type="number" />
+            <span asp-validation-for="Age" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="StudentId" class="form-label">Student ID</label>
+            <input asp-for="StudentId" class="form-control" placeholder="e.g., STU12345" />
+            <span asp-validation-for="StudentId" class="text-danger"></span>
+        </div>
+    </div>
+</div>

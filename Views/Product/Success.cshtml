@@ -1,0 +1,15 @@
+@{
+    ViewData["Title"] = "Success";
+}
+
+<div class="container mt-4">
+    <div class="alert alert-success" role="alert">
+        <h4 class="alert-heading">Product Created!</h4>
+        <p>@TempData["SuccessMessage"]</p>
+        <hr>
+        <p class="mb-0">
+            <a asp-action="Create" class="btn btn-success">Create Another Product</a>
+            <a asp-action="Index" asp-controller="Home" class="btn btn-secondary">Go Home</a>
+        </p>
+    </div>
+</div>
