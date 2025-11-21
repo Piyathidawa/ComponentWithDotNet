@@ -90,3 +90,5 @@ C:\Users\Kuropiya\OneDrive\Desktop\Net\BasicASP\BasicASP\obj\Debug\net9.0\refint
 C:\Users\Kuropiya\OneDrive\Desktop\Net\BasicASP\BasicASP\obj\Debug\net9.0\BasicASP.pdb
 C:\Users\Kuropiya\OneDrive\Desktop\Net\BasicASP\BasicASP\obj\Debug\net9.0\BasicASP.genruntimeconfig.cache
 C:\Users\Kuropiya\OneDrive\Desktop\Net\BasicASP\BasicASP\obj\Debug\net9.0\ref\BasicASP.dll
+C:\Users\Kuropiya\OneDrive\Desktop\Net\BasicASP\BasicASP\obj\Debug\net9.0\BasicASP.sourcelink.json
+C:\Users\Kuropiya\OneDrive\Desktop\Net\BasicASP\BasicASP\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
