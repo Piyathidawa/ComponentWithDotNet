@@ -22,5 +22,8 @@ namespace BasicASP.Models
         public string? StudentId { get; set; }
         public string? Company { get; set; }
         public string? JobTitle { get; set; }
-    }
+
+        // Contract Persons list (คนที่จะทำสัญญา)
+        public List<ContractPersonViewModel> ContractPersons { get; set; } = new List<ContractPersonViewModel>();
+    } 
 }

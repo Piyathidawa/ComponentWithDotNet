@@ -36,3 +36,203 @@
         </div>
     </div>
 </div>
+
+<!-- Employee Contract Persons Section -->
+@* <div class="card mt-3 border-success">
+    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-people"></i> Employee Contract Persons</h5>
+        <button type="button" class="btn btn-light btn-sm" id="addEmployeeContractPersonBtn">
+            <i class="bi bi-plus-circle"></i> Add Person
+        </button>
+    </div>
+    <div class="card-body">
+        <div id="employeeContractPersonsList">
+            <p class="text-muted" id="noEmployeePersonsMsg">No contract persons added yet.</p>
+            <div class="table-responsive d-none" id="employeePersonsTable">
+                <table class="table table-hover table-sm">
+                    <thead class="table-success">
+                        <tr>
+                            <th>#</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Age</th>
+                            <th>Position</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employeePersonsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+        <div id="employeeContractPersonsHiddenInputs"></div>
+    </div>
+</div>
+
+<!-- Employee Contract Person Modal -->
+<div class="modal fade" id="employeeContractPersonModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="employeeContractPersonModalLabel">Add Employee Contract Person</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="employeeContractPersonForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">First Name *</label>
+                            <input type="text" class="form-control" id="empPersonFirstName" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Last Name *</label>
+                            <input type="text" class="form-control" id="empPersonLastName" required />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Age *</label>
+                            <input type="number" class="form-control" id="empPersonAge" min="18" max="100" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Position</label>
+                            <input type="text" class="form-control" id="empPersonPosition" />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" id="empPersonNotes" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="saveEmployeeContractPersonBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        if (window.employeeContractPersonsInitialized) return;
+        window.employeeContractPersonsInitialized = true;
+
+        window.employeeContractPersons = window.employeeContractPersons || [];
+        var editingEmployeePersonIndex = -1;
+
+        // Handle modal hide event to remove focus
+        $('#employeeContractPersonModal').on('hide.bs.modal', function() {
+            $(document.activeElement).blur();
+        });
+
+        function renderEmployeeContractPersons() {
+            if (window.employeeContractPersons.length === 0) {
+                $('#noEmployeePersonsMsg').removeClass('d-none');
+                $('#employeePersonsTable').addClass('d-none');
+            } else {
+                $('#noEmployeePersonsMsg').addClass('d-none');
+                $('#employeePersonsTable').removeClass('d-none');
+                
+                var tbody = $('#employeePersonsTableBody');
+                tbody.empty();
+                
+                window.employeeContractPersons.forEach(function(person, index) {
+                    tbody.append(`
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${person.FirstName}</td>
+                            <td>${person.LastName}</td>
+                            <td>${person.Age}</td>
+                            <td>${person.Position || '-'}</td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-warning edit-emp-person" data-index="${index}">Edit</button>
+                                <button type="button" class="btn btn-sm btn-danger delete-emp-person" data-index="${index}">Delete</button>
+                            </td>
+                        </tr>
+                    `);
+                });
+            }
+            updateEmployeeHiddenInputs();
+        }
+
+        function updateEmployeeHiddenInputs() {
+            var container = $('#employeeContractPersonsHiddenInputs');
+            container.empty();
+            window.employeeContractPersons.forEach(function(person, index) {
+                container.append(`
+                    <input type="hidden" name="ContractPersons[${index}].FirstName" value="${person.FirstName}" />
+                    <input type="hidden" name="ContractPersons[${index}].LastName" value="${person.LastName}" />
+                    <input type="hidden" name="ContractPersons[${index}].Age" value="${person.Age}" />
+                    <input type="hidden" name="ContractPersons[${index}].Position" value="${person.Position || ''}" />
+                    <input type="hidden" name="ContractPersons[${index}].Notes" value="${person.Notes || ''}" />
+                `);
+            });
+        }
+
+        $(document).off('click', '#addEmployeeContractPersonBtn').on('click', '#addEmployeeContractPersonBtn', function() {
+            editingEmployeePersonIndex = -1;
+            $('#employeeContractPersonModalLabel').text('Add Employee Contract Person');
+            $('#empPersonFirstName').val('');
+            $('#empPersonLastName').val('');
+            $('#empPersonAge').val('');
+            $('#empPersonPosition').val('');
+            $('#empPersonNotes').val('');
+            var modal = new bootstrap.Modal(document.getElementById('employeeContractPersonModal'));
+            modal.show();
+        });
+
+        $(document).off('click', '.edit-emp-person').on('click', '.edit-emp-person', function() {
+            editingEmployeePersonIndex = $(this).data('index');
+            var person = window.employeeContractPersons[editingEmployeePersonIndex];
+            $('#employeeContractPersonModalLabel').text('Edit Employee Contract Person');
+            $('#empPersonFirstName').val(person.FirstName);
+            $('#empPersonLastName').val(person.LastName);
+            $('#empPersonAge').val(person.Age);
+            $('#empPersonPosition').val(person.Position);
+            $('#empPersonNotes').val(person.Notes);
+            var modal = new bootstrap.Modal(document.getElementById('employeeContractPersonModal'));
+            modal.show();
+        });
+
+        $(document).off('click', '.delete-emp-person').on('click', '.delete-emp-person', function() {
+            if (confirm('Delete this person?')) {
+                window.employeeContractPersons.splice($(this).data('index'), 1);
+                renderEmployeeContractPersons();
+            }
+        });
+
+        $(document).off('click', '#saveEmployeeContractPersonBtn').on('click', '#saveEmployeeContractPersonBtn', function(e) {
+            var person = {
+                FirstName: $('#empPersonFirstName').val().trim(),
+                LastName: $('#empPersonLastName').val().trim(),
+                Age: parseInt($('#empPersonAge').val()),
+                Position: $('#empPersonPosition').val().trim(),
+                Notes: $('#empPersonNotes').val().trim()
+            };
+
+            if (!person.FirstName || !person.LastName || !person.Age) {
+                alert('Please fill required fields');
+                return;
+            }
+
+            if (editingEmployeePersonIndex >= 0) {
+                window.employeeContractPersons[editingEmployeePersonIndex] = person;
+            } else {
+                window.employeeContractPersons.push(person);
+            }
+
+            renderEmployeeContractPersons();
+            
+            // Remove focus from button before closing modal
+            $(e.target).blur();
+            
+            var modalEl = document.getElementById('employeeContractPersonModal');
+            var modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) {
+                modal.hide();
+            } else {
+                $('#employeeContractPersonModal').modal('hide');
+            }
+        });
+    })();
+</script> *@

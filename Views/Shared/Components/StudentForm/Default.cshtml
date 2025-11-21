@@ -30,3 +30,203 @@
         </div>
     </div>
 </div>
+
+<!-- Student Contract Persons Section -->
+<div class="card mt-3 border-primary">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-people"></i> Student Contract Persons</h5>
+        <button type="button" class="btn btn-light btn-sm" id="addStudentContractPersonBtn">
+            <i class="bi bi-plus-circle"></i> Add Person
+        </button>
+    </div>
+    <div class="card-body">
+        <div id="studentContractPersonsList">
+            <p class="text-muted" id="noStudentPersonsMsg">No contract persons added yet.</p>
+            <div class="table-responsive d-none" id="studentPersonsTable">
+                <table class="table table-hover table-sm">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>#</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Age</th>
+                            <th>Position</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentPersonsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+        <div id="studentContractPersonsHiddenInputs"></div>
+    </div>
+</div>
+
+<!-- Student Contract Person Modal -->
+<div class="modal fade" id="studentContractPersonModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="studentContractPersonModalLabel">Add Student Contract Person</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="studentContractPersonForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">First Name *</label>
+                            <input type="text" class="form-control" id="stuPersonFirstName" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Last Name *</label>
+                            <input type="text" class="form-control" id="stuPersonLastName" required />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Age *</label>
+                            <input type="number" class="form-control" id="stuPersonAge" min="18" max="100" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Position</label>
+                            <input type="text" class="form-control" id="stuPersonPosition" />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" id="stuPersonNotes" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveStudentContractPersonBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        if (window.studentContractPersonsInitialized) return;
+        window.studentContractPersonsInitialized = true;
+
+        window.studentContractPersons = window.studentContractPersons || [];
+        var editingStudentPersonIndex = -1;
+
+        // Handle modal hide event to remove focus
+        $('#studentContractPersonModal').on('hide.bs.modal', function() {
+            $(document.activeElement).blur();
+        });
+
+        function renderStudentContractPersons() {
+            if (window.studentContractPersons.length === 0) {
+                $('#noStudentPersonsMsg').removeClass('d-none');
+                $('#studentPersonsTable').addClass('d-none');
+            } else {
+                $('#noStudentPersonsMsg').addClass('d-none');
+                $('#studentPersonsTable').removeClass('d-none');
+                
+                var tbody = $('#studentPersonsTableBody');
+                tbody.empty();
+                
+                window.studentContractPersons.forEach(function(person, index) {
+                    tbody.append(`
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${person.FirstName}</td>
+                            <td>${person.LastName}</td>
+                            <td>${person.Age}</td>
+                            <td>${person.Position || '-'}</td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-warning edit-stu-person" data-index="${index}">Edit</button>
+                                <button type="button" class="btn btn-sm btn-danger delete-stu-person" data-index="${index}">Delete</button>
+                            </td>
+                        </tr>
+                    `);
+                });
+            }
+            updateStudentHiddenInputs();
+        }
+
+        function updateStudentHiddenInputs() {
+            var container = $('#studentContractPersonsHiddenInputs');
+            container.empty();
+            window.studentContractPersons.forEach(function(person, index) {
+                container.append(`
+                    <input type="hidden" name="ContractPersons[${index}].FirstName" value="${person.FirstName}" />
+                    <input type="hidden" name="ContractPersons[${index}].LastName" value="${person.LastName}" />
+                    <input type="hidden" name="ContractPersons[${index}].Age" value="${person.Age}" />
+                    <input type="hidden" name="ContractPersons[${index}].Position" value="${person.Position || ''}" />
+                    <input type="hidden" name="ContractPersons[${index}].Notes" value="${person.Notes || ''}" />
+                `);
+            });
+        }
+
+        $(document).off('click', '#addStudentContractPersonBtn').on('click', '#addStudentContractPersonBtn', function() {
+            editingStudentPersonIndex = -1;
+            $('#studentContractPersonModalLabel').text('Add Student Contract Person');
+            $('#stuPersonFirstName').val('');
+            $('#stuPersonLastName').val('');
+            $('#stuPersonAge').val('');
+            $('#stuPersonPosition').val('');
+            $('#stuPersonNotes').val('');
+            var modal = new bootstrap.Modal(document.getElementById('studentContractPersonModal'));
+            modal.show();
+        });
+
+        $(document).off('click', '.edit-stu-person').on('click', '.edit-stu-person', function() {
+            editingStudentPersonIndex = $(this).data('index');
+            var person = window.studentContractPersons[editingStudentPersonIndex];
+            $('#studentContractPersonModalLabel').text('Edit Student Contract Person');
+            $('#stuPersonFirstName').val(person.FirstName);
+            $('#stuPersonLastName').val(person.LastName);
+            $('#stuPersonAge').val(person.Age);
+            $('#stuPersonPosition').val(person.Position);
+            $('#stuPersonNotes').val(person.Notes);
+            var modal = new bootstrap.Modal(document.getElementById('studentContractPersonModal'));
+            modal.show();
+        });
+
+        $(document).off('click', '.delete-stu-person').on('click', '.delete-stu-person', function() {
+            if (confirm('Delete this person?')) {
+                window.studentContractPersons.splice($(this).data('index'), 1);
+                renderStudentContractPersons();
+            }
+        });
+
+        $(document).off('click', '#saveStudentContractPersonBtn').on('click', '#saveStudentContractPersonBtn', function(e) {
+            var person = {
+                FirstName: $('#stuPersonFirstName').val().trim(),
+                LastName: $('#stuPersonLastName').val().trim(),
+                Age: parseInt($('#stuPersonAge').val()),
+                Position: $('#stuPersonPosition').val().trim(),
+                Notes: $('#stuPersonNotes').val().trim()
+            };
+
+            if (!person.FirstName || !person.LastName || !person.Age) {
+                alert('Please fill required fields');
+                return;
+            }
+
+            if (editingStudentPersonIndex >= 0) {
+                window.studentContractPersons[editingStudentPersonIndex] = person;
+            } else {
+                window.studentContractPersons.push(person);
+            }
+
+            renderStudentContractPersons();
+            
+            // Remove focus from button before closing modal
+            $(e.target).blur();
+            
+            var modalEl = document.getElementById('studentContractPersonModal');
+            var modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) {
+                modal.hide();
+            } else {
+                $('#studentContractPersonModal').modal('hide');
+            }
+        });
+    })();
+</script>

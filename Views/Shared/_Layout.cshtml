@@ -8,6 +8,16 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BasicASP.styles.css" asp-append-version="true" />
+    <!-- Select2 CSS only in head -->
+
+    <link rel="stylesheet" href="~/lib/select2/dist/css/select2.min.css">
+    <!-- jQuery must load first -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <!-- Then Select2 (requires jQuery) -->
+    <script src="~/lib/select2/dist/js/select2.min.js"></script>
+    <!-- Then other scripts -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
 </head>
 <body>
     <header>
@@ -52,9 +62,7 @@
             &copy; 2025 - BasicASP - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+ 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
