@@ -16,7 +16,7 @@ namespace BasicASP.Models
         public int Age { get; set; }
 
         [Required]
-        public string PersonType { get; set; } = "Student";
+        public string PersonType { get; set; }
 
         // Additional fields for different person types
         public string? StudentId { get; set; }

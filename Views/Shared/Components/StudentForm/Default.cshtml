@@ -152,7 +152,9 @@
         function updateStudentHiddenInputs() {
             var container = $('#studentContractPersonsHiddenInputs');
             container.empty();
+            console.log('🔵 [Student] Updating hidden inputs. Total persons:', window.studentContractPersons.length);
             window.studentContractPersons.forEach(function(person, index) {
+                console.log(`🔵 [Student] Person ${index}:`, person);
                 container.append(`
                     <input type="hidden" name="ContractPersons[${index}].FirstName" value="${person.FirstName}" />
                     <input type="hidden" name="ContractPersons[${index}].LastName" value="${person.LastName}" />
@@ -161,6 +163,7 @@
                     <input type="hidden" name="ContractPersons[${index}].Notes" value="${person.Notes || ''}" />
                 `);
             });
+            console.log('🔵 [Student] Hidden inputs HTML:', container.html());
         }
 
         $(document).off('click', '#addStudentContractPersonBtn').on('click', '#addStudentContractPersonBtn', function() {
@@ -204,16 +207,24 @@
                 Notes: $('#stuPersonNotes').val().trim()
             };
 
+            console.log('🔵 [Student] Saving person:', person);
+
             if (!person.FirstName || !person.LastName || !person.Age) {
+                console.log('🔴 [Student] Validation failed');
                 alert('Please fill required fields');
                 return;
             }
 
             if (editingStudentPersonIndex >= 0) {
+                console.log('🔵 [Student] Editing person at index:', editingStudentPersonIndex);
                 window.studentContractPersons[editingStudentPersonIndex] = person;
             } else {
+                console.log('🔵 [Student] Adding new person');
                 window.studentContractPersons.push(person);
             }
+
+            console.log('🔵 [Student] Total persons after save:', window.studentContractPersons.length);
+            console.log('🔵 [Student] All persons:', window.studentContractPersons);
 
             renderStudentContractPersons();
             

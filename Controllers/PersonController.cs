@@ -11,8 +11,7 @@ namespace BasicASP.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(PersonViewModel model)
+        public IActionResult Create([FromForm] PersonViewModel model)
         {
             // Log received data in C# backend
             Console.WriteLine("=== DATA RECEIVED IN C# BACKEND ===");

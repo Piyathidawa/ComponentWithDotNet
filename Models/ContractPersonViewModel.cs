@@ -14,9 +14,9 @@ namespace BasicASP.Models
         [StringLength(50)]
         public string LastName { get; set; } = string.Empty;
 
-        [Required]
-        [Range(18, 100)]
-        public int Age { get; set; }
+        //[Required]
+        //[Range(18, 100)]
+        public string Age { get; set; }
 
         [StringLength(200)]
         public string? Position { get; set; }

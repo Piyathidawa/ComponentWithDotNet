@@ -146,7 +146,9 @@
         function updateGeneralHiddenInputs() {
             var container = $('#generalContractPersonsHiddenInputs');
             container.empty();
+            console.log('⚪ [General] Updating hidden inputs. Total persons:', window.generalContractPersons.length);
             window.generalContractPersons.forEach(function(person, index) {
+                console.log(`⚪ [General] Person ${index}:`, person);
                 container.append(`
                     <input type="hidden" name="ContractPersons[${index}].FirstName" value="${person.FirstName}" />
                     <input type="hidden" name="ContractPersons[${index}].LastName" value="${person.LastName}" />
@@ -155,6 +157,7 @@
                     <input type="hidden" name="ContractPersons[${index}].Notes" value="${person.Notes || ''}" />
                 `);
             });
+            console.log('⚪ [General] Hidden inputs HTML:', container.html());
         }
 
         $(document).off('click', '#addGeneralContractPersonBtn').on('click', '#addGeneralContractPersonBtn', function() {
@@ -198,16 +201,24 @@
                 Notes: $('#genPersonNotes').val().trim()
             };
 
+            console.log('⚪ [General] Saving person:', person);
+
             if (!person.FirstName || !person.LastName || !person.Age) {
+                console.log('🔴 [General] Validation failed');
                 alert('Please fill required fields');
                 return;
             }
 
             if (editingGeneralPersonIndex >= 0) {
+                console.log('⚪ [General] Editing person at index:', editingGeneralPersonIndex);
                 window.generalContractPersons[editingGeneralPersonIndex] = person;
             } else {
+                console.log('⚪ [General] Adding new person');
                 window.generalContractPersons.push(person);
             }
+
+            console.log('⚪ [General] Total persons after save:', window.generalContractPersons.length);
+            console.log('⚪ [General] All persons:', window.generalContractPersons);
 
             renderGeneralContractPersons();
             

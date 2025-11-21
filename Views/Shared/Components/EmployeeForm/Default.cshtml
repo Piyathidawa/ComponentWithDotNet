@@ -37,8 +37,8 @@
     </div>
 </div>
 
-<!-- Employee Contract Persons Section -->
-@* <div class="card mt-3 border-success">
+ <!-- Employee Contract Persons Section -->
+<div class="card mt-3 border-success">
     <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
         <h5 class="mb-0"><i class="bi bi-people"></i> Employee Contract Persons</h5>
         <button type="button" class="btn btn-light btn-sm" id="addEmployeeContractPersonBtn">
@@ -158,7 +158,9 @@
         function updateEmployeeHiddenInputs() {
             var container = $('#employeeContractPersonsHiddenInputs');
             container.empty();
+            console.log('🟠 [Employee] Updating hidden inputs. Total persons:', window.employeeContractPersons.length);
             window.employeeContractPersons.forEach(function(person, index) {
+                console.log(`🟠 [Employee] Person ${index}:`, person);
                 container.append(`
                     <input type="hidden" name="ContractPersons[${index}].FirstName" value="${person.FirstName}" />
                     <input type="hidden" name="ContractPersons[${index}].LastName" value="${person.LastName}" />
@@ -167,6 +169,7 @@
                     <input type="hidden" name="ContractPersons[${index}].Notes" value="${person.Notes || ''}" />
                 `);
             });
+            console.log('🟠 [Employee] Hidden inputs HTML:', container.html());
         }
 
         $(document).off('click', '#addEmployeeContractPersonBtn').on('click', '#addEmployeeContractPersonBtn', function() {
@@ -210,16 +213,24 @@
                 Notes: $('#empPersonNotes').val().trim()
             };
 
+            console.log('🟠 [Employee] Saving person:', person);
+
             if (!person.FirstName || !person.LastName || !person.Age) {
+                console.log('🔴 [Employee] Validation failed');
                 alert('Please fill required fields');
                 return;
             }
 
             if (editingEmployeePersonIndex >= 0) {
+                console.log('🟠 [Employee] Editing person at index:', editingEmployeePersonIndex);
                 window.employeeContractPersons[editingEmployeePersonIndex] = person;
             } else {
+                console.log('🟠 [Employee] Adding new person');
                 window.employeeContractPersons.push(person);
             }
+
+            console.log('🟠 [Employee] Total persons after save:', window.employeeContractPersons.length);
+            console.log('🟠 [Employee] All persons:', window.employeeContractPersons);
 
             renderEmployeeContractPersons();
             
@@ -235,4 +246,4 @@
             }
         });
     })();
-</script> *@
+</script> 

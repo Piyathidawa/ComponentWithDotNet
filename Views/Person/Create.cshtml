@@ -28,7 +28,7 @@
         </div>
         
         <div class="mt-3">
-            <button type="submit" class="btn btn-primary btn-lg">
+            <button type="button" class="btn btn-primary btn-lg" id="submitBtn">
                 <i class="bi bi-check-circle"></i> Submit
             </button>
             <a asp-action="Index" asp-controller="Home" class="btn btn-secondary btn-lg">
@@ -42,54 +42,140 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     
     <script>
+        console.log('🔵 Script section loaded');
+        
         $(document).ready(function() {
+            console.log('🔵 Document ready');
+            
+            // Check if form exists
+            var form = $('#personForm');
+            console.log('🔵 Form found:', form.length > 0);
+            console.log('🔵 Form element:', form[0]);
+            
             $('select').select2({
                 width:'100%'
             });
+            console.log('🔵 Select2 initialized');
 
             // Person Type Dropdown Change
             $('#personTypeDropdown').change(function() {
                 var personType = $(this).val();
-                console.log('Person Type Changed to:', personType);
+                console.log('🟡 Person Type Changed to:', personType);
+                console.log('🟡 AJAX URL:', '@Url.Action("GetPersonFormComponent", "Person")');
+                console.log('🟡 AJAX Data:', { personType: personType });
                 
                 $.ajax({
                     url: '@Url.Action("GetPersonFormComponent", "Person")',
                     type: 'GET',
                     data: { personType: personType },
                     success: function(result) {
+                        console.log('🟢 ===== AJAX RESPONSE START =====');
+                        console.log('🟢 Response type:', typeof result);
+                        console.log('🟢 Response length:', result.length);
+                        console.log('🟢 Response HTML (first 500 chars):', result.substring(0, 500));
+                        console.log('🟢 Full Response HTML:', result);
+                        console.log('🟢 ===== AJAX RESPONSE END =====');
+                        
                         $('#dynamicFormContainer').html(result);
-                        console.log('Component loaded for:', personType);
+                        console.log('🟢 Component loaded for:', personType);
+                        console.log('🟢 Container HTML after load:', $('#dynamicFormContainer').html().substring(0, 500));
+                        
+                        // Check what's in the container now
+                        console.log('🟢 Forms in container:', $('#dynamicFormContainer').find('form').length);
+                        console.log('🟢 Inputs in container:', $('#dynamicFormContainer').find('input').length);
+                        console.log('🟢 Scripts in container:', $('#dynamicFormContainer').find('script').length);
                         
                         var form = $('#personForm');
                         form.removeData('validator');
                         form.removeData('unobtrusiveValidation');
                         $.validator.unobtrusive.parse(form);
                     },
-                    error: function() {
-                        console.error('Error loading form component');
+                    error: function(xhr, status, error) {
+                        console.error('🔴 ===== AJAX ERROR =====');
+                        console.error('🔴 Status:', status);
+                        console.error('🔴 Error:', error);
+                        console.error('🔴 Response:', xhr.responseText);
+                        console.error('🔴 ===== AJAX ERROR END =====');
                         alert('Error loading form component');
                     }
                 });
             });
 
-            // Form Submit
-            $('#personForm').on('submit', function(e) {
-                e.preventDefault();
+            // Submit button click handler - Send data via AJAX
+            $('#submitBtn').on('click', function(e) {
+                console.log('�s === SUBMIT BUTTON CLICKED ===');
                 
-                console.log('=== FORM SUBMIT CLICKED ===');
+                // Get form data
                 var formData = {};
                 $('#personForm').serializeArray().forEach(function(field) {
-                    formData[field.name] = field.value;
+                    // formData[field.name] = field.value;
+                            if (field.name.startsWith("ContractPersons[")) {
+            let match = field.name.match(/ContractPersons\[(\d+)\]\.(\w+)/);
+            let index = match[1];
+            let prop = match[2];
+
+            if (!formData.ContractPersons) formData.ContractPersons = [];
+            if (!formData.ContractPersons[index]) formData.ContractPersons[index] = {};
+
+            formData.ContractPersons[index][prop] = field.value;
+        }else if(field.name == "Age"){
+            formData[field.name] = parseInt(field.value, 10);
+        }
+        else if(field.name == "__Invariant"){
+
+        } 
+        else {
+            formData[field.name] = field.value;
+        }
+
                 });
-                console.log('Form Data Object:', formData);
-                console.log('JSON Format:', JSON.stringify(formData, null, 2));
-                console.log('Sending data to C# backend...');
-                console.log('===========================');
                 
-                this.submit();
+                console.log('🟡 Form Data collected:', formData);
+                console.log('🟡 Form Data JSON:', JSON.stringify(formData, null, 2));
+                
+                // Check validation
+                var form = $('#personForm');
+                var isValid = form.valid();
+                console.log('� Foorm is valid?', isValid);
+                
+                if (!isValid) {
+                    console.log('🔴 VALIDATION FAILED - Aborting submit');
+                    alert('Please fill in all required fields correctly');
+                    return;
+                }
+                
+                console.log('🟢 Sending data to backend via AJAX...');
+                console.log('🟢 URL:', '@Url.Action("Create", "Person")');
+                console.log('🟢 Data to send:', JSON.stringify(formData));
+                
+                // Send via AJAX with serialized form data (includes anti-forgery token)
+                $.ajax({
+                    url: '@Url.Action("Create", "Person")',
+                    type: 'POST',
+                    data: formData, // Use serialize() to include token
+                    success: function(response) {
+                        console.log('🟢 ===== BACKEND RESPONSE SUCCESS =====');
+                        console.log('🟢 Response:', response);
+                        console.log('🟢 Response type:', typeof response);
+                        console.log('🟢 ===================================');
+                        
+                        // Redirect to success page
+                        window.location.href = '@Url.Action("Success", "Person")';
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('🔴 ===== BACKEND ERROR =====');
+                        console.error('🔴 Status:', status);
+                        console.error('🔴 Error:', error);
+                        console.error('🔴 Status Code:', xhr.status);
+                        console.error('🔴 Response Text:', xhr.responseText);
+                        console.error('🔴 ==========================');
+                        
+                        alert('Error submitting form. Check console for details.');
+                    }
+                });
             });
 
-            console.log('Person Form initialized');
+            console.log('🔵 Person Form initialized');
         });
     </script>
 }
